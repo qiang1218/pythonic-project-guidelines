@@ -1984,10 +1984,8 @@
 </li>
 </ul>
 <p>不要使用反斜杠来<a href="https://docs.python.org/3/reference/lexical_analysis.html#explicit-line-joining">显式延续行</a>。</p>
-<p>Python
-会将<a href="https://docs.python.org/3/reference/lexical_analysis.html#implicit-line-joining">圆括号、方括号和花括号中的行隐式的连接起来</a>
-，
-你可以利用这个特点。如果需要，你可以在表达式外围增加一对额外的圆括号。</p>
+<p>相反，Python
+会将<a href="https://docs.python.org/3/reference/lexical_analysis.html#implicit-line-joining">圆括号、方括号和花括号中的行隐式的连接起来</a>，你可以利用这个特点。如果需要，你可以在表达式外围增加一对额外的圆括号。</p>
 <p>请注意，此规则并不禁止字符串中反斜杠转义的换行符（见下文）。</p>
 <div class="admonition success">
 <p class="admonition-title">推荐</p>
@@ -2075,7 +2073,7 @@
 自动格式化程序无法帮助使该行低于限制，则允许该行超过此最大值。建议作者在合理的情况下，根据上述注释手动拆分行。</p>
 <h2 id="33">3.3 括号</h2>
 <p>宁缺毋滥的使用括号。</p>
-<p>除非是用于实现行连接，否则不要在返回语句或条件语句中使用括号，不过在元组两边使用括号是可以的。</p>
+<p>除非是用于实现行连接，否则不要在返回语句或条件语句中使用括号，隐式的行连接或者元组两边使用括号除外。</p>
 <div class="admonition success">
 <p class="admonition-title">推荐</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="k">if</span> <span class="n">foo</span><span class="p">:</span>
@@ -2349,15 +2347,19 @@
 </span></code></pre></div>
 <h3 id="383">3.8.3 函数和方法</h3>
 <p>下文所指的函数，包括函数，方法，生成器以及属性。</p>
-<p>一个函数必须要有文档字符串，除非它满足以下条件：</p>
+<p>每个具有以下一项或多项特性的函数都必须有文档字符串：</p>
 <ul>
-<li>外部不可见</li>
-<li>非常短小</li>
-<li>简单明了</li>
+<li>公共 API 的一部分</li>
+<li>规模大</li>
+<li>逻辑复杂</li>
 </ul>
-<p>文档字符串应该提供足够的信息，当别人编写代码调用该函数时，他不需要看一行代码，只要看文档字符串就可以了。文档字符串应该是描述性的（ <code>"""Fetches rows from a Bigtable."""</code>
-） 而不是命令式的（ <code>"""Fetch rows from a Bigtable."""</code> ） ，除了 <code>@property</code> 数据描述符，它应该使用<a href="#384">与属性相同的样式</a>
-。文档字符串应该包含函数做什么，以及输入和输出的详细描述。通常，不应该描述“怎么做”，除非是一些复杂的算法。对于复杂的代码，在代码旁边加注释会比使用文档字符串更有意义。</p>
+<p>文档字符串应该提供足够的信息，当别人编写代码调用该函数时，他不需要看一行代码，只要看文档字符串就可以了。
+文档字符串应描述函数的调用语法和语义，但通常不描述其实现细节，除非这些细节与函数的使用方式相关。
+例如，作为副作用会改变其参数的函数应在其文档字符串中注明这一点。否则，对于调用者不相关的函数实现的微妙但重要的细节，
+最好将其表达为代码旁边的注释，而不是在函数的文档字符串中。</p>
+<p>文档字符串应该是描述性的（ <code>"""Fetches rows from a Bigtable."""</code>） 或者命令式的（ <code>"""Fetch rows from a Bigtable."""</code> ），
+但是在一个文件中，风格应该保持一直。对于 @property 数据描述符的文档字符串应该使用与属性或函数参数的文档字符串相同的风格
+（ <code>"""The Bigtable path."""</code> 而不是 <code>"""Returns the Bigtable path."""</code> ）。</p>
 <p>重写基类中的方法时，用一个简单的文档字符串引导读者查看被覆盖方法的文档字符串，例如： <code>"""See base class."""</code>
 。这样做的好处是，无需重复基本方法中的文档字符串信息。但是，如果重写方法的行为发生了改变，或者需要提供详细信息（例如：记录额外副作用），那么重写方法至少需要通过文档字符串来描述这些差异。</p>
 <p>关于函数的几个方面应该在特定的小节中进行描述记录。这几个方面如下文所述，每节应该以一个标题行开始，标题行以冒号结尾。除标题行外，小节的其他内容应被缩进两个或四个空格（在文件内保持一致）。如果函数的名称和签名具有足够的信息，可以使用单行文档字符串进行适当描述，那就可以省略这些部分。</p>
@@ -2365,67 +2367,68 @@
 <p>列出每个参数的名字，在名字后使用一个冒号和一个空格，分隔对该参数的描述。如果描述太长超过了单行80字符，使用2或者4个空格的悬挂缩进（与文件其他部分保持一致）。描述应该包括所需的类型和含义。如果一个函数接受 <code>*foo</code>
 （可变长度参数列表）或者 <code>**bar</code>（任意关键字参数），应该详细列出 <code>*foo</code> 和 <code>**bar</code> 。</p>
 <h4 id="returns-yields"><em>Returns:（或者 Yields: 用于生成器）</em></h4>
-<p>描述返回值的类型和语义。</p>
-<ul>
-<li>如果函数返回 <code>None</code> ，这一部分可以省略。</li>
-<li>如果文档字符串以 <code>Returns</code> 或 <code>Yields</code> 开头（例如： <code>"""Returns row from Bigtable as a tuple of strings."""</code>
-  ），并且开始的句子足以描述返回值，那么也可以省略。</li>
-</ul>
+<p>返回值的语义应该被描述清楚，包括类型注释所不能提供的任何类型信息。
+如果函数只返回 None，则不需要此部分。如果文档字符串以 <code>Returns</code> 或 <code>Yields</code> 开头
+（例如 <code>"""Returns row from Bigtable as a tuple of strings."""</code>），并且开头的句子足以描述返回值，则可以省略此部分。
+不要模仿像 <code>NumPy风格</code>，该风格通常将元组返回值记录为多个带有单独名称的返回值（从不提到元组）。
+相反，应将此类返回值描述为：<code>Returns: A tuple (mat_a, mat_b), where mat_a is …, and …</code>。
+文档字符串中的辅助名称不一定需要与函数体中使用的任何内部名称相对应（因为它们不是 API 的一部分）。</p>
 <h4 id="raises"><em>Raises:</em></h4>
 <p>列出与接口有关的所有异常，然后给出说明。使用类似的异常名称 + 冒号 + 空格或换行符，并按 <code>Args：</code> 中所述悬挂缩进样式。如果违反了文档字符串中指定的
 API，则不应该记录引发的异常（因为这会使违反 API 的行为成为 API 的一部分）。</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-33-1"><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a><span class="k">def</span> <span class="nf">fetch_smalltable_rows</span><span class="p">(</span><span class="n">table_handle</span><span class="p">:</span> <span class="n">smalltable</span><span class="o">.</span><span class="n">Table</span><span class="p">,</span>
-</span><span id="__span-33-2"><a id="__codelineno-33-2" name="__codelineno-33-2" href="#__codelineno-33-2"></a>                          <span class="n">keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span>
-</span><span id="__span-33-3"><a id="__codelineno-33-3" name="__codelineno-33-3" href="#__codelineno-33-3"></a>                          <span class="n">require_all_keys</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span id="__span-33-4"><a id="__codelineno-33-4" name="__codelineno-33-4" href="#__codelineno-33-4"></a>                          <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
-</span><span id="__span-33-5"><a id="__codelineno-33-5" name="__codelineno-33-5" href="#__codelineno-33-5"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Fetches rows from a Smalltable.</span>
-</span><span id="__span-33-6"><a id="__codelineno-33-6" name="__codelineno-33-6" href="#__codelineno-33-6"></a>
-</span><span id="__span-33-7"><a id="__codelineno-33-7" name="__codelineno-33-7" href="#__codelineno-33-7"></a><span class="sd">    Retrieves rows pertaining to the given keys from the Table instance</span>
-</span><span id="__span-33-8"><a id="__codelineno-33-8" name="__codelineno-33-8" href="#__codelineno-33-8"></a><span class="sd">    represented by table_handle.  String keys will be UTF-8 encoded.</span>
-</span><span id="__span-33-9"><a id="__codelineno-33-9" name="__codelineno-33-9" href="#__codelineno-33-9"></a>
-</span><span id="__span-33-10"><a id="__codelineno-33-10" name="__codelineno-33-10" href="#__codelineno-33-10"></a><span class="sd">    Args:</span>
-</span><span id="__span-33-11"><a id="__codelineno-33-11" name="__codelineno-33-11" href="#__codelineno-33-11"></a><span class="sd">        table_handle: An open smalltable.Table instance.</span>
-</span><span id="__span-33-12"><a id="__codelineno-33-12" name="__codelineno-33-12" href="#__codelineno-33-12"></a><span class="sd">        keys: A sequence of strings representing the key of each table</span>
-</span><span id="__span-33-13"><a id="__codelineno-33-13" name="__codelineno-33-13" href="#__codelineno-33-13"></a><span class="sd">          row to fetch.  String keys will be UTF-8 encoded.</span>
-</span><span id="__span-33-14"><a id="__codelineno-33-14" name="__codelineno-33-14" href="#__codelineno-33-14"></a><span class="sd">        require_all_keys: Optional; If require_all_keys is True only</span>
-</span><span id="__span-33-15"><a id="__codelineno-33-15" name="__codelineno-33-15" href="#__codelineno-33-15"></a><span class="sd">          rows with values set for all keys will be returned.</span>
-</span><span id="__span-33-16"><a id="__codelineno-33-16" name="__codelineno-33-16" href="#__codelineno-33-16"></a>
-</span><span id="__span-33-17"><a id="__codelineno-33-17" name="__codelineno-33-17" href="#__codelineno-33-17"></a><span class="sd">    Returns:</span>
-</span><span id="__span-33-18"><a id="__codelineno-33-18" name="__codelineno-33-18" href="#__codelineno-33-18"></a><span class="sd">        A dict mapping keys to the corresponding table row data</span>
-</span><span id="__span-33-19"><a id="__codelineno-33-19" name="__codelineno-33-19" href="#__codelineno-33-19"></a><span class="sd">        fetched. Each row is represented as a tuple of strings. For</span>
-</span><span id="__span-33-20"><a id="__codelineno-33-20" name="__codelineno-33-20" href="#__codelineno-33-20"></a><span class="sd">        example:</span>
-</span><span id="__span-33-21"><a id="__codelineno-33-21" name="__codelineno-33-21" href="#__codelineno-33-21"></a>
-</span><span id="__span-33-22"><a id="__codelineno-33-22" name="__codelineno-33-22" href="#__codelineno-33-22"></a><span class="sd">        {b&#39;Serak&#39;: (&#39;Rigel VII&#39;, &#39;Preparer&#39;),</span>
-</span><span id="__span-33-23"><a id="__codelineno-33-23" name="__codelineno-33-23" href="#__codelineno-33-23"></a><span class="sd">         b&#39;Zim&#39;: (&#39;Irk&#39;, &#39;Invader&#39;),</span>
-</span><span id="__span-33-24"><a id="__codelineno-33-24" name="__codelineno-33-24" href="#__codelineno-33-24"></a><span class="sd">         b&#39;Lrrr&#39;: (&#39;Omicron Persei 8&#39;, &#39;Emperor&#39;)}</span>
-</span><span id="__span-33-25"><a id="__codelineno-33-25" name="__codelineno-33-25" href="#__codelineno-33-25"></a>
-</span><span id="__span-33-26"><a id="__codelineno-33-26" name="__codelineno-33-26" href="#__codelineno-33-26"></a><span class="sd">        Returned keys are always bytes.  If a key from the keys argument is</span>
-</span><span id="__span-33-27"><a id="__codelineno-33-27" name="__codelineno-33-27" href="#__codelineno-33-27"></a><span class="sd">        missing from the dictionary, then that row was not found in the</span>
-</span><span id="__span-33-28"><a id="__codelineno-33-28" name="__codelineno-33-28" href="#__codelineno-33-28"></a><span class="sd">        table (and require_all_keys must have been False).</span>
-</span><span id="__span-33-29"><a id="__codelineno-33-29" name="__codelineno-33-29" href="#__codelineno-33-29"></a>
-</span><span id="__span-33-30"><a id="__codelineno-33-30" name="__codelineno-33-30" href="#__codelineno-33-30"></a><span class="sd">    Raises:</span>
-</span><span id="__span-33-31"><a id="__codelineno-33-31" name="__codelineno-33-31" href="#__codelineno-33-31"></a><span class="sd">        IOError: An error occurred accessing the smalltable.</span>
-</span><span id="__span-33-32"><a id="__codelineno-33-32" name="__codelineno-33-32" href="#__codelineno-33-32"></a><span class="sd">    &quot;&quot;&quot;</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-33-1"><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a><span class="k">def</span> <span class="nf">fetch_smalltable_rows</span><span class="p">(</span>
+</span><span id="__span-33-2"><a id="__codelineno-33-2" name="__codelineno-33-2" href="#__codelineno-33-2"></a>    <span class="n">table_handle</span><span class="p">:</span> <span class="n">smalltable</span><span class="o">.</span><span class="n">Table</span><span class="p">,</span>
+</span><span id="__span-33-3"><a id="__codelineno-33-3" name="__codelineno-33-3" href="#__codelineno-33-3"></a>    <span class="n">keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">bytes</span> <span class="o">|</span> <span class="nb">str</span><span class="p">],</span>
+</span><span id="__span-33-4"><a id="__codelineno-33-4" name="__codelineno-33-4" href="#__codelineno-33-4"></a>    <span class="n">require_all_keys</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span id="__span-33-5"><a id="__codelineno-33-5" name="__codelineno-33-5" href="#__codelineno-33-5"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]]:</span>
+</span><span id="__span-33-6"><a id="__codelineno-33-6" name="__codelineno-33-6" href="#__codelineno-33-6"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Fetches rows from a Smalltable.</span>
+</span><span id="__span-33-7"><a id="__codelineno-33-7" name="__codelineno-33-7" href="#__codelineno-33-7"></a>
+</span><span id="__span-33-8"><a id="__codelineno-33-8" name="__codelineno-33-8" href="#__codelineno-33-8"></a><span class="sd">    Retrieves rows pertaining to the given keys from the Table instance</span>
+</span><span id="__span-33-9"><a id="__codelineno-33-9" name="__codelineno-33-9" href="#__codelineno-33-9"></a><span class="sd">    represented by table_handle.  String keys will be UTF-8 encoded.</span>
+</span><span id="__span-33-10"><a id="__codelineno-33-10" name="__codelineno-33-10" href="#__codelineno-33-10"></a>
+</span><span id="__span-33-11"><a id="__codelineno-33-11" name="__codelineno-33-11" href="#__codelineno-33-11"></a><span class="sd">    Args:</span>
+</span><span id="__span-33-12"><a id="__codelineno-33-12" name="__codelineno-33-12" href="#__codelineno-33-12"></a><span class="sd">        table_handle: An open smalltable.Table instance.</span>
+</span><span id="__span-33-13"><a id="__codelineno-33-13" name="__codelineno-33-13" href="#__codelineno-33-13"></a><span class="sd">        keys: A sequence of strings representing the key of each table</span>
+</span><span id="__span-33-14"><a id="__codelineno-33-14" name="__codelineno-33-14" href="#__codelineno-33-14"></a><span class="sd">          row to fetch.  String keys will be UTF-8 encoded.</span>
+</span><span id="__span-33-15"><a id="__codelineno-33-15" name="__codelineno-33-15" href="#__codelineno-33-15"></a><span class="sd">        require_all_keys: If True only rows with values set for all keys will be</span>
+</span><span id="__span-33-16"><a id="__codelineno-33-16" name="__codelineno-33-16" href="#__codelineno-33-16"></a><span class="sd">          returned.</span>
+</span><span id="__span-33-17"><a id="__codelineno-33-17" name="__codelineno-33-17" href="#__codelineno-33-17"></a>
+</span><span id="__span-33-18"><a id="__codelineno-33-18" name="__codelineno-33-18" href="#__codelineno-33-18"></a><span class="sd">    Returns:</span>
+</span><span id="__span-33-19"><a id="__codelineno-33-19" name="__codelineno-33-19" href="#__codelineno-33-19"></a><span class="sd">        A dict mapping keys to the corresponding table row data</span>
+</span><span id="__span-33-20"><a id="__codelineno-33-20" name="__codelineno-33-20" href="#__codelineno-33-20"></a><span class="sd">        fetched. Each row is represented as a tuple of strings. For</span>
+</span><span id="__span-33-21"><a id="__codelineno-33-21" name="__codelineno-33-21" href="#__codelineno-33-21"></a><span class="sd">        example:</span>
+</span><span id="__span-33-22"><a id="__codelineno-33-22" name="__codelineno-33-22" href="#__codelineno-33-22"></a>
+</span><span id="__span-33-23"><a id="__codelineno-33-23" name="__codelineno-33-23" href="#__codelineno-33-23"></a><span class="sd">        {b&#39;Serak&#39;: (&#39;Rigel VII&#39;, &#39;Preparer&#39;),</span>
+</span><span id="__span-33-24"><a id="__codelineno-33-24" name="__codelineno-33-24" href="#__codelineno-33-24"></a><span class="sd">         b&#39;Zim&#39;: (&#39;Irk&#39;, &#39;Invader&#39;),</span>
+</span><span id="__span-33-25"><a id="__codelineno-33-25" name="__codelineno-33-25" href="#__codelineno-33-25"></a><span class="sd">         b&#39;Lrrr&#39;: (&#39;Omicron Persei 8&#39;, &#39;Emperor&#39;)}</span>
+</span><span id="__span-33-26"><a id="__codelineno-33-26" name="__codelineno-33-26" href="#__codelineno-33-26"></a>
+</span><span id="__span-33-27"><a id="__codelineno-33-27" name="__codelineno-33-27" href="#__codelineno-33-27"></a><span class="sd">        Returned keys are always bytes.  If a key from the keys argument is</span>
+</span><span id="__span-33-28"><a id="__codelineno-33-28" name="__codelineno-33-28" href="#__codelineno-33-28"></a><span class="sd">        missing from the dictionary, then that row was not found in the</span>
+</span><span id="__span-33-29"><a id="__codelineno-33-29" name="__codelineno-33-29" href="#__codelineno-33-29"></a><span class="sd">        table (and require_all_keys must have been False).</span>
+</span><span id="__span-33-30"><a id="__codelineno-33-30" name="__codelineno-33-30" href="#__codelineno-33-30"></a>
+</span><span id="__span-33-31"><a id="__codelineno-33-31" name="__codelineno-33-31" href="#__codelineno-33-31"></a><span class="sd">    Raises:</span>
+</span><span id="__span-33-32"><a id="__codelineno-33-32" name="__codelineno-33-32" href="#__codelineno-33-32"></a><span class="sd">        IOError: An error occurred accessing the smalltable.</span>
+</span><span id="__span-33-33"><a id="__codelineno-33-33" name="__codelineno-33-33" href="#__codelineno-33-33"></a><span class="sd">    &quot;&quot;&quot;</span>
 </span></code></pre></div>
 <p>如下所示， Args 中参数换行也是允许的：</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a><span class="k">def</span> <span class="nf">fetch_smalltable_rows</span><span class="p">(</span><span class="n">table_handle</span><span class="p">:</span> <span class="n">smalltable</span><span class="o">.</span><span class="n">Table</span><span class="p">,</span>
-</span><span id="__span-34-2"><a id="__codelineno-34-2" name="__codelineno-34-2" href="#__codelineno-34-2"></a>                          <span class="n">keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span>
-</span><span id="__span-34-3"><a id="__codelineno-34-3" name="__codelineno-34-3" href="#__codelineno-34-3"></a>                          <span class="n">require_all_keys</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span id="__span-34-4"><a id="__codelineno-34-4" name="__codelineno-34-4" href="#__codelineno-34-4"></a>                          <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
-</span><span id="__span-34-5"><a id="__codelineno-34-5" name="__codelineno-34-5" href="#__codelineno-34-5"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Fetches rows from a Smalltable.</span>
-</span><span id="__span-34-6"><a id="__codelineno-34-6" name="__codelineno-34-6" href="#__codelineno-34-6"></a>
-</span><span id="__span-34-7"><a id="__codelineno-34-7" name="__codelineno-34-7" href="#__codelineno-34-7"></a><span class="sd">    Retrieves rows pertaining to the given keys from the Table instance</span>
-</span><span id="__span-34-8"><a id="__codelineno-34-8" name="__codelineno-34-8" href="#__codelineno-34-8"></a><span class="sd">    represented by table_handle.  String keys will be UTF-8 encoded.</span>
-</span><span id="__span-34-9"><a id="__codelineno-34-9" name="__codelineno-34-9" href="#__codelineno-34-9"></a>
-</span><span id="__span-34-10"><a id="__codelineno-34-10" name="__codelineno-34-10" href="#__codelineno-34-10"></a><span class="sd">    Args:</span>
-</span><span id="__span-34-11"><a id="__codelineno-34-11" name="__codelineno-34-11" href="#__codelineno-34-11"></a><span class="sd">      table_handle:</span>
-</span><span id="__span-34-12"><a id="__codelineno-34-12" name="__codelineno-34-12" href="#__codelineno-34-12"></a><span class="sd">        An open smalltable.Table instance.</span>
-</span><span id="__span-34-13"><a id="__codelineno-34-13" name="__codelineno-34-13" href="#__codelineno-34-13"></a><span class="sd">      keys:</span>
-</span><span id="__span-34-14"><a id="__codelineno-34-14" name="__codelineno-34-14" href="#__codelineno-34-14"></a><span class="sd">        A sequence of strings representing the key of each table row to</span>
-</span><span id="__span-34-15"><a id="__codelineno-34-15" name="__codelineno-34-15" href="#__codelineno-34-15"></a><span class="sd">        fetch.  String keys will be UTF-8 encoded.</span>
-</span><span id="__span-34-16"><a id="__codelineno-34-16" name="__codelineno-34-16" href="#__codelineno-34-16"></a><span class="sd">      require_all_keys:</span>
-</span><span id="__span-34-17"><a id="__codelineno-34-17" name="__codelineno-34-17" href="#__codelineno-34-17"></a><span class="sd">        Optional; If require_all_keys is True only rows with values set</span>
-</span><span id="__span-34-18"><a id="__codelineno-34-18" name="__codelineno-34-18" href="#__codelineno-34-18"></a><span class="sd">        for all keys will be returned.</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a><span class="k">def</span> <span class="nf">fetch_smalltable_rows</span><span class="p">(</span>
+</span><span id="__span-34-2"><a id="__codelineno-34-2" name="__codelineno-34-2" href="#__codelineno-34-2"></a>    <span class="n">table_handle</span><span class="p">:</span> <span class="n">smalltable</span><span class="o">.</span><span class="n">Table</span><span class="p">,</span>
+</span><span id="__span-34-3"><a id="__codelineno-34-3" name="__codelineno-34-3" href="#__codelineno-34-3"></a>    <span class="n">keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">bytes</span> <span class="o">|</span> <span class="nb">str</span><span class="p">],</span>
+</span><span id="__span-34-4"><a id="__codelineno-34-4" name="__codelineno-34-4" href="#__codelineno-34-4"></a>    <span class="n">require_all_keys</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span id="__span-34-5"><a id="__codelineno-34-5" name="__codelineno-34-5" href="#__codelineno-34-5"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]]:</span>
+</span><span id="__span-34-6"><a id="__codelineno-34-6" name="__codelineno-34-6" href="#__codelineno-34-6"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Fetches rows from a Smalltable.</span>
+</span><span id="__span-34-7"><a id="__codelineno-34-7" name="__codelineno-34-7" href="#__codelineno-34-7"></a>
+</span><span id="__span-34-8"><a id="__codelineno-34-8" name="__codelineno-34-8" href="#__codelineno-34-8"></a><span class="sd">    Retrieves rows pertaining to the given keys from the Table instance</span>
+</span><span id="__span-34-9"><a id="__codelineno-34-9" name="__codelineno-34-9" href="#__codelineno-34-9"></a><span class="sd">    represented by table_handle.  String keys will be UTF-8 encoded.</span>
+</span><span id="__span-34-10"><a id="__codelineno-34-10" name="__codelineno-34-10" href="#__codelineno-34-10"></a>
+</span><span id="__span-34-11"><a id="__codelineno-34-11" name="__codelineno-34-11" href="#__codelineno-34-11"></a><span class="sd">    Args:</span>
+</span><span id="__span-34-12"><a id="__codelineno-34-12" name="__codelineno-34-12" href="#__codelineno-34-12"></a><span class="sd">      table_handle:</span>
+</span><span id="__span-34-13"><a id="__codelineno-34-13" name="__codelineno-34-13" href="#__codelineno-34-13"></a><span class="sd">        An open smalltable.Table instance.</span>
+</span><span id="__span-34-14"><a id="__codelineno-34-14" name="__codelineno-34-14" href="#__codelineno-34-14"></a><span class="sd">      keys:</span>
+</span><span id="__span-34-15"><a id="__codelineno-34-15" name="__codelineno-34-15" href="#__codelineno-34-15"></a><span class="sd">        A sequence of strings representing the key of each table row to</span>
+</span><span id="__span-34-16"><a id="__codelineno-34-16" name="__codelineno-34-16" href="#__codelineno-34-16"></a><span class="sd">        fetch.  String keys will be UTF-8 encoded.</span>
+</span><span id="__span-34-17"><a id="__codelineno-34-17" name="__codelineno-34-17" href="#__codelineno-34-17"></a><span class="sd">      require_all_keys:</span>
+</span><span id="__span-34-18"><a id="__codelineno-34-18" name="__codelineno-34-18" href="#__codelineno-34-18"></a><span class="sd">        If True only rows with values set for all keys will be returned.</span>
 </span><span id="__span-34-19"><a id="__codelineno-34-19" name="__codelineno-34-19" href="#__codelineno-34-19"></a>
 </span><span id="__span-34-20"><a id="__codelineno-34-20" name="__codelineno-34-20" href="#__codelineno-34-20"></a><span class="sd">    Returns:</span>
 </span><span id="__span-34-21"><a id="__codelineno-34-21" name="__codelineno-34-21" href="#__codelineno-34-21"></a><span class="sd">      A dict mapping keys to the corresponding table row data</span>
@@ -2450,44 +2453,50 @@ API，则不应该记录引发的异常（因为这会使违反 API 的行为成
 <div class="language-python highlight"><pre><span></span><code><span id="__span-35-1"><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a><span class="k">class</span> <span class="nc">SampleClass</span><span class="p">:</span>
 </span><span id="__span-35-2"><a id="__codelineno-35-2" name="__codelineno-35-2" href="#__codelineno-35-2"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Summary of class here.</span>
 </span><span id="__span-35-3"><a id="__codelineno-35-3" name="__codelineno-35-3" href="#__codelineno-35-3"></a>
-</span><span id="__span-35-4"><a id="__codelineno-35-4" name="__codelineno-35-4" href="#__codelineno-35-4"></a><span class="sd">    Longer class information....</span>
-</span><span id="__span-35-5"><a id="__codelineno-35-5" name="__codelineno-35-5" href="#__codelineno-35-5"></a><span class="sd">    Longer class information....</span>
+</span><span id="__span-35-4"><a id="__codelineno-35-4" name="__codelineno-35-4" href="#__codelineno-35-4"></a><span class="sd">    Longer class information...</span>
+</span><span id="__span-35-5"><a id="__codelineno-35-5" name="__codelineno-35-5" href="#__codelineno-35-5"></a><span class="sd">    Longer class information...</span>
 </span><span id="__span-35-6"><a id="__codelineno-35-6" name="__codelineno-35-6" href="#__codelineno-35-6"></a>
 </span><span id="__span-35-7"><a id="__codelineno-35-7" name="__codelineno-35-7" href="#__codelineno-35-7"></a><span class="sd">    Attributes:</span>
 </span><span id="__span-35-8"><a id="__codelineno-35-8" name="__codelineno-35-8" href="#__codelineno-35-8"></a><span class="sd">        likes_spam: A boolean indicating if we like SPAM or not.</span>
 </span><span id="__span-35-9"><a id="__codelineno-35-9" name="__codelineno-35-9" href="#__codelineno-35-9"></a><span class="sd">        eggs: An integer count of the eggs we have laid.</span>
 </span><span id="__span-35-10"><a id="__codelineno-35-10" name="__codelineno-35-10" href="#__codelineno-35-10"></a><span class="sd">    &quot;&quot;&quot;</span>
 </span><span id="__span-35-11"><a id="__codelineno-35-11" name="__codelineno-35-11" href="#__codelineno-35-11"></a>
-</span><span id="__span-35-12"><a id="__codelineno-35-12" name="__codelineno-35-12" href="#__codelineno-35-12"></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">likes_spam</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-</span><span id="__span-35-13"><a id="__codelineno-35-13" name="__codelineno-35-13" href="#__codelineno-35-13"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Inits SampleClass with blah.&quot;&quot;&quot;</span>
-</span><span id="__span-35-14"><a id="__codelineno-35-14" name="__codelineno-35-14" href="#__codelineno-35-14"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">likes_spam</span> <span class="o">=</span> <span class="n">likes_spam</span>
-</span><span id="__span-35-15"><a id="__codelineno-35-15" name="__codelineno-35-15" href="#__codelineno-35-15"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">eggs</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span id="__span-35-16"><a id="__codelineno-35-16" name="__codelineno-35-16" href="#__codelineno-35-16"></a>
-</span><span id="__span-35-17"><a id="__codelineno-35-17" name="__codelineno-35-17" href="#__codelineno-35-17"></a>    <span class="k">def</span> <span class="nf">public_method</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="__span-35-18"><a id="__codelineno-35-18" name="__codelineno-35-18" href="#__codelineno-35-18"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Performs operation blah.&quot;&quot;&quot;</span>
+</span><span id="__span-35-12"><a id="__codelineno-35-12" name="__codelineno-35-12" href="#__codelineno-35-12"></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">likes_spam</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+</span><span id="__span-35-13"><a id="__codelineno-35-13" name="__codelineno-35-13" href="#__codelineno-35-13"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initializes the instance based on spam preference.</span>
+</span><span id="__span-35-14"><a id="__codelineno-35-14" name="__codelineno-35-14" href="#__codelineno-35-14"></a>
+</span><span id="__span-35-15"><a id="__codelineno-35-15" name="__codelineno-35-15" href="#__codelineno-35-15"></a><span class="sd">        Args:</span>
+</span><span id="__span-35-16"><a id="__codelineno-35-16" name="__codelineno-35-16" href="#__codelineno-35-16"></a><span class="sd">          likes_spam: Defines if instance exhibits this preference.</span>
+</span><span id="__span-35-17"><a id="__codelineno-35-17" name="__codelineno-35-17" href="#__codelineno-35-17"></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="__span-35-18"><a id="__codelineno-35-18" name="__codelineno-35-18" href="#__codelineno-35-18"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">likes_spam</span> <span class="o">=</span> <span class="n">likes_spam</span>
+</span><span id="__span-35-19"><a id="__codelineno-35-19" name="__codelineno-35-19" href="#__codelineno-35-19"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">eggs</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span id="__span-35-20"><a id="__codelineno-35-20" name="__codelineno-35-20" href="#__codelineno-35-20"></a>
+</span><span id="__span-35-21"><a id="__codelineno-35-21" name="__codelineno-35-21" href="#__codelineno-35-21"></a>    <span class="k">def</span> <span class="nf">public_method</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="__span-35-22"><a id="__codelineno-35-22" name="__codelineno-35-22" href="#__codelineno-35-22"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Performs operation blah.&quot;&quot;&quot;</span>
 </span></code></pre></div>
 <p>所有类文档字符串都应以一行摘要开头，描述类实例所代表的内容。这意味着 Exception 的子类还应该描述异常代表什么，而不是它可能发生的上下文。
 类文档字符串不应重复不必要的信息，例如该类是一个类。</p>
 <div class="admonition success">
 <p class="admonition-title">推荐</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-36-1"><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a><span class="k">class</span> <span class="nc">CheeseShopAddress</span><span class="p">:</span>
-</span><span id="__span-36-2"><a id="__codelineno-36-2" name="__codelineno-36-2" href="#__codelineno-36-2"></a><span class="w">  </span><span class="sd">&quot;&quot;&quot;The address of a cheese shop.</span>
-</span><span id="__span-36-3"><a id="__codelineno-36-3" name="__codelineno-36-3" href="#__codelineno-36-3"></a><span class="sd">  ...</span>
-</span><span id="__span-36-4"><a id="__codelineno-36-4" name="__codelineno-36-4" href="#__codelineno-36-4"></a><span class="sd">  &quot;&quot;&quot;</span>
-</span><span id="__span-36-5"><a id="__codelineno-36-5" name="__codelineno-36-5" href="#__codelineno-36-5"></a>
-</span><span id="__span-36-6"><a id="__codelineno-36-6" name="__codelineno-36-6" href="#__codelineno-36-6"></a><span class="k">class</span> <span class="nc">OutOfCheeseError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-</span><span id="__span-36-7"><a id="__codelineno-36-7" name="__codelineno-36-7" href="#__codelineno-36-7"></a><span class="w">  </span><span class="sd">&quot;&quot;&quot;No more cheese is available.&quot;&quot;&quot;</span>
+</span><span id="__span-36-2"><a id="__codelineno-36-2" name="__codelineno-36-2" href="#__codelineno-36-2"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;The address of a cheese shop.</span>
+</span><span id="__span-36-3"><a id="__codelineno-36-3" name="__codelineno-36-3" href="#__codelineno-36-3"></a>
+</span><span id="__span-36-4"><a id="__codelineno-36-4" name="__codelineno-36-4" href="#__codelineno-36-4"></a><span class="sd">    ...</span>
+</span><span id="__span-36-5"><a id="__codelineno-36-5" name="__codelineno-36-5" href="#__codelineno-36-5"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-36-6"><a id="__codelineno-36-6" name="__codelineno-36-6" href="#__codelineno-36-6"></a>
+</span><span id="__span-36-7"><a id="__codelineno-36-7" name="__codelineno-36-7" href="#__codelineno-36-7"></a><span class="k">class</span> <span class="nc">OutOfCheeseError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+</span><span id="__span-36-8"><a id="__codelineno-36-8" name="__codelineno-36-8" href="#__codelineno-36-8"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;No more cheese is available.&quot;&quot;&quot;</span>
 </span></code></pre></div>
 </div>
 <p>!!! fail "不推荐</p>
 <div class="language-text highlight"><pre><span></span><code>```python
 class CheeseShopAddress:
-  &quot;&quot;&quot;Class that describes the address of a cheese shop.
-  ...
-  &quot;&quot;&quot;
+    &quot;&quot;&quot;Class that describes the address of a cheese shop.
+
+    ...
+    &quot;&quot;&quot;
 
 class OutOfCheeseError(Exception):
-  &quot;&quot;&quot;Raised when no more cheese is available.&quot;&quot;&quot;
+    &quot;&quot;&quot;Raised when no more cheese is available.&quot;&quot;&quot;
 ```
 </code></pre></div>
 <h3 id="385">3.8.5 块注释和行注释</h3>
@@ -2681,8 +2690,8 @@ class OutOfCheeseError(Exception):
 此规则自然扩展到内部使用套接字的可关闭资源，例如数据库连接，以及需要以类似方式关闭的其他资源。仅举几个例子，
 这还包括 <a href="https://docs.python.org/3/library/mmap.html">mmap mappings</a>,
 <a href="https://google.github.io/styleguide/pyguide.html#3-python-style-rules">h5py File objects</a>和
-<a href="https://matplotlib.org/2.1.0/api/_as_gen/matplotlib.pyplot.close.html">matplotlib.pyplot figure windows</a>。
-除文件外，sockets 或其他类似文件的对象在没有必要的情况下打开，会有许多副作用，例如：</p>
+<a href="https://matplotlib.org/2.1.0/api/_as_gen/matplotlib.pyplot.close.html">matplotlib.pyplot figure windows</a>。</p>
+<p>除文件外，sockets 或其他类似文件的对象在没有必要的情况下打开，会有许多副作用，例如：</p>
 <ul>
 <li>它们可能会消耗有限的系统资源。如文件描述符。如果这些资源在使用后没有及时归还系统，那么用于处理这些对象的代码会将资源消耗殆尽。</li>
 <li>持有文件将会阻止对于文件的其他诸如移动、删除之类的操作。</li>
@@ -2694,6 +2703,7 @@ class OutOfCheeseError(Exception):
   实现采用不同的内存管理技术，比如延时垃圾处理机制。延时垃圾处理机制可能会导致对象生命周期被任意无限制的延长。</li>
 <li>对于文件意外的引用，会导致对于文件的持有时间超出预期（比如对于异常的跟踪，包含有全局变量等）。</li>
 </ul>
+<p>多次发现，依赖于自动清理机制在近几十年内的多个语言中导致了重大问题（例如: java中的 <a href="https://wiki.sei.cmu.edu/confluence/display/java/MET12-J.+Do+not+use+finalizers">this article</a>）</p>
 <p>管理文件的首选方法是使用 <a href="http://docs.python.org/reference/compound_stmts.html#the-with-statement"><code>with</code> 语句</a>：</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-56-1"><a id="__codelineno-56-1" name="__codelineno-56-1" href="#__codelineno-56-1"></a><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;hello.txt&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">hello_file</span><span class="p">:</span>
 </span><span id="__span-56-2"><a id="__codelineno-56-2" name="__codelineno-56-2" href="#__codelineno-56-2"></a>    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">hello_file</span><span class="p">:</span>
@@ -2720,9 +2730,10 @@ XML 请求就移除这些代码）。</p>
 <p>每个导入应该独占一行，<a href="#31912"><code>typing</code> 导入是个例外</a>。</p>
 <div class="admonition success">
 <p class="admonition-title">推荐</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-59-1"><a id="__codelineno-59-1" name="__codelineno-59-1" href="#__codelineno-59-1"></a><span class="kn">import</span> <span class="nn">os</span>
-</span><span id="__span-59-2"><a id="__codelineno-59-2" name="__codelineno-59-2" href="#__codelineno-59-2"></a><span class="kn">import</span> <span class="nn">sys</span>
-</span><span id="__span-59-3"><a id="__codelineno-59-3" name="__codelineno-59-3" href="#__codelineno-59-3"></a><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Sequence</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-59-1"><a id="__codelineno-59-1" name="__codelineno-59-1" href="#__codelineno-59-1"></a><span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Sequence</span>
+</span><span id="__span-59-2"><a id="__codelineno-59-2" name="__codelineno-59-2" href="#__codelineno-59-2"></a><span class="kn">import</span> <span class="nn">os</span>
+</span><span id="__span-59-3"><a id="__codelineno-59-3" name="__codelineno-59-3" href="#__codelineno-59-3"></a><span class="kn">import</span> <span class="nn">sys</span>
+</span><span id="__span-59-4"><a id="__codelineno-59-4" name="__codelineno-59-4" href="#__codelineno-59-4"></a><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">NewType</span>
 </span></code></pre></div>
 </div>
 <div class="admonition fail">
@@ -2809,13 +2820,13 @@ XML 请求就移除这些代码）。</p>
 </span></code></pre></div>
 </div>
 <h2 id="315-getters-and-setters">3.15 Getters and Setters</h2>
-<p>当 getter 和 setter 函数（也称为访问器和修改器）为获取或设置变量的值提供有意义的角色或行为时，应该使用它们。</p>
+<p>当 getter 和 setter 函数（也称为访问器和修改器）为获取或设置变量的值提供有意义的角色或行为时，则应该使用它们。</p>
 <p>特别是，当当前或合理的未来获取或设置变量很复杂或成本很高时，应该使用它们。</p>
 <p>例如，如果一对 getter/setter 只是读取和写入内部属性，则应将内部属性公开。相比之下，如果设置一个变量意味着某些状态无效或重建，
 那么它应该是一个 setter 函数。函数调用暗示正在发生潜在的重要操作。或者，当需要简单逻辑或重构以不再需要 getter 和 setter 时，
 <code>property</code> 可能是一个选项。</p>
-<p>另一方面，如果访问更复杂，或者变量的访问开销很显著，那么你应该使用像 <code>get_foo()</code> 和 <code>set_foo()</code>
-这样的函数调用（遵循<a href="#316">命名</a>准则）。如果之前的代码行为允许通过属性（<code>property</code>
+<p>Getter 和 setter 应该遵循命名规范，例如： <code>get_foo()</code> 和 <code>set_foo()</code>。</p>
+<p>如果之前的代码行为允许通过属性（<code>property</code>
 ）访问，那么就不要将新的访问函数与属性绑定。这样，任何试图通过老方法访问变量的代码就没法运行，使用者也就会意识到复杂性发生了变化。</p>
 <h2 id="316">3.16 命名</h2>
 <p><code>module_name</code>、<code>package_name</code>、<code>ClassName</code>、<code>method_name</code>、<code>ExceptionName</code>、<code>function_name</code>、<code>GLOBAL_CONSTANT_NAME</code>
@@ -2845,14 +2856,13 @@ XML 请求就移除这些代码）。</p>
 <h3 id="3162">3.16.2 命名约定</h3>
 <ul>
 <li>所谓“内部（<code>Internal</code>）”表示仅模块内可用，或者在类内是保护或私有的。</li>
-<li>用单下划线（<code>_</code>）开头表示模块变量或函数是 <code>protected</code> 的（使用 <code>import * from</code> 时不会包含）。</li>
-<li>用双下划线（<code>__</code>  ）开头的实例变量或方法表示类内私有，但并不推荐这么做，因为会影响代码的可读性或可测试性，而且也不是真正的私有。</li>
+<li>在模块变量和函数前加一个下划线(<code>_</code>)，可以在一定程度上保护它们（代码检查工具会标记访问受保护的成员）。</li>
+<li>用双下划线（<code>__</code>  ）开头的实例变量或方法表示类内私有，但并不推荐这么做，因为会影响代码的可读性或可测试性，而且也不是真正的私有。建议使用 单下划线<code>_</code>。</li>
 <li>将相关的类和顶级函数放在同一个模块里。不像 Java ，没必要限制一个类一个模块。</li>
 <li>对类名使用大写字母开头的单词（如 <code>CapWords</code>，即 Pascal 风格），但是模块名应该用小写加下划线的方式（如 <code>lower_with_under.py</code> ）。
   尽管已经有很多现存的模块使用类似于 <code>CapWords.py</code> 这样的命名，但现在已经不鼓励这样做，因为如果模块名碰巧和类名一致，这会让人困扰。（“想想
   我应该用 <code>import StringIO</code> 还是 <code>from StringIO import StringIO</code> ？”）</li>
-<li>下划线可能会出现在以 <code>test</code> 开头的 <code>unittest</code> 方法名称中，常用于分隔逻辑组件的名称，即使组件名称使用 <code>CapWords</code>
-  也应如此。一种可用的模式是： <code>test&lt;MethodUnderTest&gt;_&lt;state&gt;</code>，例如<code>testPop_EmptyStack</code>。其实对于测试方法的命名并没有强制规定。</li>
+<li>新的单元测试文件遵循 PEP 8 兼容的下划线命名法，例如，<code>test_&lt;被测试的方法&gt;&lt;状态&gt;</code>。为了与遵循 <code>CapWords</code> 函数名称的旧模块保持一致，方法名称中可以出现下划线，以便分隔名称的逻辑组件，其中以 test 开头的方法名可能采用 <code>test&lt;被测试的方法&gt;&lt;状态</code>&gt; 的模式。</li>
 </ul>
 <h3 id="3163">3.16.3 文件命名</h3>
 <p>Python 文件名必须以 <code>.py</code> 扩展名结尾，并且不要包含连字符（<code>-</code>
@@ -2932,7 +2942,7 @@ API，最好使用符合 PEP8 的描述性名称（<code>descriptive_names</code
 <p>在 Python 中， <code>pydoc</code>
 以及单元测试要求模块必须是可导入的。如果文件打算作为可执行文件使用，那么它的主要功能应该放在 <code>main()</code>
 函数中。你的代码应该在执行主程序前总是检查 <code>if __name__ == '__main__'</code>，这样当模块被导入时主程序就不会被执行。</p>
-<p>当使用 <a href="https://github.com/abseil/abseil-py"><code>absl</code></a> 时，请使用 <code>app.run</code> ：</p>
+<p>当使用 <a href="https://github.com/abseil/abseil-py">absl</a> 时，请使用 <code>app.run</code> ：</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-69-1"><a id="__codelineno-69-1" name="__codelineno-69-1" href="#__codelineno-69-1"></a><span class="kn">from</span> <span class="nn">absl</span> <span class="kn">import</span> <span class="n">app</span>
 </span><span id="__span-69-2"><a id="__codelineno-69-2" name="__codelineno-69-2" href="#__codelineno-69-2"></a><span class="o">...</span>
 </span><span id="__span-69-3"><a id="__codelineno-69-3" name="__codelineno-69-3" href="#__codelineno-69-3"></a>
@@ -2959,7 +2969,7 @@ API，最好使用符合 PEP8 的描述性名称（<code>descriptive_names</code
 <h2 id="319">3.19 类型标注</h2>
 <h3 id="3191">3.19.1 通用规则</h3>
 <ul>
-<li>熟悉 <a href="https://www.python.org/dev/peps/pep-0484/">PEP-484</a></li>
+<li>熟悉 <a href="https://www.python.org/dev/peps/pep-0484/">PEP-484</a>。</li>
 <li>
 <p>在方法中，只有在需要正确的类型信息时才标注 <code>self</code> 或 <code>cls</code> 。例如：</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-71-1"><a id="__codelineno-71-1" name="__codelineno-71-1" href="#__codelineno-71-1"></a><span class="nd">@classmethod</span> 
@@ -2968,8 +2978,9 @@ API，最好使用符合 PEP8 的描述性名称（<code>descriptive_names</code
 </span></code></pre></div>
 </li>
 <li>
-<p>如果无法表示任何其他变量或返回类型，请使用 <code>Any</code> 。</p>
+<p>同样，不必强制注释 <code>__init__</code> 的返回值（其中 None 是唯一有效的选项）。</p>
 </li>
+<li>如果无法表示任何其他变量或返回类型，请使用 <code>Any</code> 。</li>
 <li>你不需要标注模块中的所有函数。<ul>
 <li>至少要标注公共 API。</li>
 <li>在安全性和清晰性与灵活性之间找到一个平衡点。</li>
@@ -2981,29 +2992,35 @@ API，最好使用符合 PEP8 的描述性名称（<code>descriptive_names</code
 </ul>
 <h3 id="3192">3.19.2 断行</h3>
 <p>遵循现有<a href="#34">缩进规则</a>。</p>
-<p>在标注之后，许多函数签名将变成“每行一个参数”。</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-72-1"><a id="__codelineno-72-1" name="__codelineno-72-1" href="#__codelineno-72-1"></a><span class="k">def</span> <span class="nf">my_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-</span><span id="__span-72-2"><a id="__codelineno-72-2" name="__codelineno-72-2" href="#__codelineno-72-2"></a>              <span class="n">first_var</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-</span><span id="__span-72-3"><a id="__codelineno-72-3" name="__codelineno-72-3" href="#__codelineno-72-3"></a>              <span class="n">second_var</span><span class="p">:</span> <span class="n">Foo</span><span class="p">,</span>
-</span><span id="__span-72-4"><a id="__codelineno-72-4" name="__codelineno-72-4" href="#__codelineno-72-4"></a>              <span class="n">third_var</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Bar</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-</span><span id="__span-72-5"><a id="__codelineno-72-5" name="__codelineno-72-5" href="#__codelineno-72-5"></a>    <span class="o">...</span>
+<p>在注释之后，许多函数签名将变为“每行一个参数”。为确保返回类型也有自己的一行，可以在最后一个参数后面加上一个逗号。</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-72-1"><a id="__codelineno-72-1" name="__codelineno-72-1" href="#__codelineno-72-1"></a><span class="k">def</span> <span class="nf">my_method</span><span class="p">(</span>
+</span><span id="__span-72-2"><a id="__codelineno-72-2" name="__codelineno-72-2" href="#__codelineno-72-2"></a>    <span class="bp">self</span><span class="p">,</span>
+</span><span id="__span-72-3"><a id="__codelineno-72-3" name="__codelineno-72-3" href="#__codelineno-72-3"></a>    <span class="n">first_var</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+</span><span id="__span-72-4"><a id="__codelineno-72-4" name="__codelineno-72-4" href="#__codelineno-72-4"></a>    <span class="n">second_var</span><span class="p">:</span> <span class="n">Foo</span><span class="p">,</span>
+</span><span id="__span-72-5"><a id="__codelineno-72-5" name="__codelineno-72-5" href="#__codelineno-72-5"></a>    <span class="n">third_var</span><span class="p">:</span> <span class="n">Bar</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-72-6"><a id="__codelineno-72-6" name="__codelineno-72-6" href="#__codelineno-72-6"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+</span><span id="__span-72-7"><a id="__codelineno-72-7" name="__codelineno-72-7" href="#__codelineno-72-7"></a>    <span class="o">...</span>
 </span></code></pre></div>
 <p>尽量在变量之间断行，不要在变量名和类型标注之间断行。如果所有内容都在一行上，就不要管了。</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-73-1"><a id="__codelineno-73-1" name="__codelineno-73-1" href="#__codelineno-73-1"></a><span class="k">def</span> <span class="nf">my_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">first_var</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 </span><span id="__span-73-2"><a id="__codelineno-73-2" name="__codelineno-73-2" href="#__codelineno-73-2"></a>    <span class="o">...</span>
 </span></code></pre></div>
-<p>如果函数名、最后一个参数和返回类型组合起来太长了，可以新换一行并缩进4个字符。</p>
+<p>如果函数名、最后一个参数和返回类型组合起来太长了，可以新换一行并缩进4个字符。
+在使用换行符时，建议将每个参数和返回类型放在自己的行上，并将右括号与 <code>def</code> 对齐。</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-74-1"><a id="__codelineno-74-1" name="__codelineno-74-1" href="#__codelineno-74-1"></a><span class="k">def</span> <span class="nf">my_method</span><span class="p">(</span>
-</span><span id="__span-74-2"><a id="__codelineno-74-2" name="__codelineno-74-2" href="#__codelineno-74-2"></a>        <span class="bp">self</span><span class="p">,</span> <span class="n">first_var</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">MyLongType1</span><span class="p">,</span> <span class="n">MyLongType1</span><span class="p">]:</span>
-</span><span id="__span-74-3"><a id="__codelineno-74-3" name="__codelineno-74-3" href="#__codelineno-74-3"></a>    <span class="o">...</span>
+</span><span id="__span-74-2"><a id="__codelineno-74-2" name="__codelineno-74-2" href="#__codelineno-74-2"></a>    <span class="bp">self</span><span class="p">,</span>
+</span><span id="__span-74-3"><a id="__codelineno-74-3" name="__codelineno-74-3" href="#__codelineno-74-3"></a>    <span class="n">other_arg</span><span class="p">:</span> <span class="n">MyLongType</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-74-4"><a id="__codelineno-74-4" name="__codelineno-74-4" href="#__codelineno-74-4"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">MyLongType1</span><span class="p">,</span> <span class="n">MyLongType1</span><span class="p">]:</span>
+</span><span id="__span-74-5"><a id="__codelineno-74-5" name="__codelineno-74-5" href="#__codelineno-74-5"></a>    <span class="o">...</span>
 </span></code></pre></div>
-<p>当返回类型与最后一个参数不在同一行时，推荐的做法是在新行中将参数缩进4个字符，并将右括号与 <code>def</code> 对齐。</p>
+<p>或者，返回类型可以与最后一个参数放在同一行：</p>
 <div class="admonition success">
 <p class="admonition-title">推荐</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-75-1"><a id="__codelineno-75-1" name="__codelineno-75-1" href="#__codelineno-75-1"></a><span class="k">def</span> <span class="nf">my_method</span><span class="p">(</span>
-</span><span id="__span-75-2"><a id="__codelineno-75-2" name="__codelineno-75-2" href="#__codelineno-75-2"></a>    <span class="bp">self</span><span class="p">,</span> <span class="n">other_arg</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">MyLongType</span><span class="p">]</span>
-</span><span id="__span-75-3"><a id="__codelineno-75-3" name="__codelineno-75-3" href="#__codelineno-75-3"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">OtherLongType</span><span class="p">,</span> <span class="n">MyLongType</span><span class="p">]:</span>
-</span><span id="__span-75-4"><a id="__codelineno-75-4" name="__codelineno-75-4" href="#__codelineno-75-4"></a><span class="o">...</span>
+</span><span id="__span-75-2"><a id="__codelineno-75-2" name="__codelineno-75-2" href="#__codelineno-75-2"></a>    <span class="bp">self</span><span class="p">,</span>
+</span><span id="__span-75-3"><a id="__codelineno-75-3" name="__codelineno-75-3" href="#__codelineno-75-3"></a>    <span class="n">first_var</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+</span><span id="__span-75-4"><a id="__codelineno-75-4" name="__codelineno-75-4" href="#__codelineno-75-4"></a>    <span class="n">second_var</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="n">OtherLongType</span><span class="p">,</span> <span class="n">MyLongType</span><span class="p">]:</span>
+</span><span id="__span-75-5"><a id="__codelineno-75-5" name="__codelineno-75-5" href="#__codelineno-75-5"></a>    <span class="o">...</span>
 </span></code></pre></div>
 </div>
 <p>Pylint 允许您将右括号移到新行，并与左括号对齐，但这么做可读性会比较差。</p>
@@ -3021,7 +3038,7 @@ API，最好使用符合 PEP8 的描述性名称（<code>descriptive_names</code
 </span><span id="__span-77-3"><a id="__codelineno-77-3" name="__codelineno-77-3" href="#__codelineno-77-3"></a>    <span class="n">first_var</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">MyLongType1</span><span class="p">],</span>
 </span><span id="__span-77-4"><a id="__codelineno-77-4" name="__codelineno-77-4" href="#__codelineno-77-4"></a>                     <span class="n">List</span><span class="p">[</span><span class="n">MyLongType2</span><span class="p">]],</span>
 </span><span id="__span-77-5"><a id="__codelineno-77-5" name="__codelineno-77-5" href="#__codelineno-77-5"></a>    <span class="n">second_var</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span>
-</span><span id="__span-77-6"><a id="__codelineno-77-6" name="__codelineno-77-6" href="#__codelineno-77-6"></a>        <span class="n">MyLongType3</span><span class="p">,</span> <span class="n">MyLongType4</span><span class="p">]]</span>
+</span><span id="__span-77-6"><a id="__codelineno-77-6" name="__codelineno-77-6" href="#__codelineno-77-6"></a>        <span class="n">MyLongType3</span><span class="p">,</span> <span class="n">MyLongType4</span><span class="p">]],</span>
 </span><span id="__span-77-7"><a id="__codelineno-77-7" name="__codelineno-77-7" href="#__codelineno-77-7"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span id="__span-77-8"><a id="__codelineno-77-8" name="__codelineno-77-8" href="#__codelineno-77-8"></a>    <span class="o">...</span>
 </span></code></pre></div>
@@ -3045,7 +3062,8 @@ API，最好使用符合 PEP8 的描述性名称（<code>descriptive_names</code
 </span></code></pre></div>
 </div>
 <h3 id="3193">3.19.3 前置声明</h3>
-<p>如果你需要在同一模块中使用没有定义的类名（例如，需要在声明类中使用类名，或者类似下面的定义），可以使用字符串作为类名。</p>
+<p>如果你需要使用一个尚未定义的类名（来自同一模块），例如，如果你需要在该类的声明内部使用类名，或者如果你使用的类是在代码后面定义的，
+那么可以使用 <code>from future import annotations</code> 或使用字符串作为类名。</p>
 <div class="admonition success">
 <p class="admonition-title">推荐</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-80-1"><a id="__codelineno-80-1" name="__codelineno-80-1" href="#__codelineno-80-1"></a><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
@@ -3056,99 +3074,108 @@ API，最好使用符合 PEP8 的描述性名称（<code>descriptive_names</code
 </span><span id="__span-80-6"><a id="__codelineno-80-6" name="__codelineno-80-6" href="#__codelineno-80-6"></a><span class="k">class</span> <span class="nc">OtherClass</span><span class="p">:</span>
 </span></code></pre></div>
 </div>
+<div class="admonition success">
+<p class="admonition-title">推荐</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-81-1"><a id="__codelineno-81-1" name="__codelineno-81-1" href="#__codelineno-81-1"></a><span class="k">class</span> <span class="nc">MyClass</span><span class="p">:</span>
+</span><span id="__span-81-2"><a id="__codelineno-81-2" name="__codelineno-81-2" href="#__codelineno-81-2"></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stack</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="s1">&#39;MyClass&#39;</span><span class="p">],</span> <span class="n">item</span><span class="p">:</span> <span class="s1">&#39;OtherClass&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-81-3"><a id="__codelineno-81-3" name="__codelineno-81-3" href="#__codelineno-81-3"></a>
+</span><span id="__span-81-4"><a id="__codelineno-81-4" name="__codelineno-81-4" href="#__codelineno-81-4"></a><span class="k">class</span> <span class="nc">OtherClass</span><span class="p">:</span>
+</span><span id="__span-81-5"><a id="__codelineno-81-5" name="__codelineno-81-5" href="#__codelineno-81-5"></a>    <span class="o">...</span>
+</span></code></pre></div>
+</div>
 <h3 id="3194">3.19.4 默认值</h3>
 <p>根据 <a href="https://www.python.org/dev/peps/pep-0008/#other-recommendations">PEP-008</a> ，仅在同时具有类型标注和默认值参数的 <code>=</code>
 左右两边使用空格。</p>
 <div class="admonition success">
 <p class="admonition-title">推荐</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-81-1"><a id="__codelineno-81-1" name="__codelineno-81-1" href="#__codelineno-81-1"></a><span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-</span><span id="__span-81-2"><a id="__codelineno-81-2" name="__codelineno-81-2" href="#__codelineno-81-2"></a>    <span class="o">...</span>
-</span></code></pre></div>
-</div>
-<div class="admonition fail">
-<p class="admonition-title">不推荐</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-82-1"><a id="__codelineno-82-1" name="__codelineno-82-1" href="#__codelineno-82-1"></a><span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">a</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-82-1"><a id="__codelineno-82-1" name="__codelineno-82-1" href="#__codelineno-82-1"></a><span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 </span><span id="__span-82-2"><a id="__codelineno-82-2" name="__codelineno-82-2" href="#__codelineno-82-2"></a>    <span class="o">...</span>
 </span></code></pre></div>
 </div>
+<div class="admonition fail">
+<p class="admonition-title">不推荐</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-83-1"><a id="__codelineno-83-1" name="__codelineno-83-1" href="#__codelineno-83-1"></a><span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">a</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+</span><span id="__span-83-2"><a id="__codelineno-83-2" name="__codelineno-83-2" href="#__codelineno-83-2"></a>    <span class="o">...</span>
+</span></code></pre></div>
+</div>
 <h3 id="3195-nonetype">3.19.5 NoneType</h3>
-<p>在 Python 类型系统中， <code>NoneType</code> 是“第一类（first class）”类型，而且为了方便拼写，定义了 <code>None</code> 作为 <code>NoneType</code>
-的别名。如果一个参数可以为 <code>None</code> ，就必须声明它！你也可以使用 <code>Union</code> ，但如果只有一种类型，请使用 <code>Optional</code> 。</p>
-<p>使用显式 <code>Optional</code> 替代隐式 <code>Optional</code> 。PEP-484 的早期版本允许将 <code>a: str = None</code> 解释为 <code>a: Optional[str] = None</code>
-，但现在已经不推荐了。</p>
+<p>在 Python 类型系统中，<code>NoneType</code> 是“一等公民”类型，而在类型注释中，None 是 NoneType 的别名。如果一个参数可以是 None，
+那么必须声明它！您可以使用 <code>|</code> 联合类型表达式（建议在新的 Python 3.10+ 代码中使用），也可以使用旧的 <code>Optional</code> 和 <code>Union</code> 语法。</p>
+<p>请使用显式的 <code>X | None</code> 而不是隐式的。PEP 484 的早期版本允许将 <code>a: str = None</code> 解释为 <code>a: str | None = None</code>，但现在已经不推荐了。</p>
 <div class="admonition success">
 <p class="admonition-title">推荐</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-83-1"><a id="__codelineno-83-1" name="__codelineno-83-1" href="#__codelineno-83-1"></a><span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">b</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span id="__span-83-2"><a id="__codelineno-83-2" name="__codelineno-83-2" href="#__codelineno-83-2"></a>    <span class="o">...</span>
-</span><span id="__span-83-3"><a id="__codelineno-83-3" name="__codelineno-83-3" href="#__codelineno-83-3"></a><span class="k">def</span> <span class="nf">multiple_nullable_union</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span>
-</span><span id="__span-83-4"><a id="__codelineno-83-4" name="__codelineno-83-4" href="#__codelineno-83-4"></a>    <span class="o">...</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-84-1"><a id="__codelineno-84-1" name="__codelineno-84-1" href="#__codelineno-84-1"></a><span class="k">def</span> <span class="nf">modern_or_union</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="__span-84-2"><a id="__codelineno-84-2" name="__codelineno-84-2" href="#__codelineno-84-2"></a>    <span class="o">...</span>
+</span><span id="__span-84-3"><a id="__codelineno-84-3" name="__codelineno-84-3" href="#__codelineno-84-3"></a><span class="k">def</span> <span class="nf">union_optional</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">b</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="__span-84-4"><a id="__codelineno-84-4" name="__codelineno-84-4" href="#__codelineno-84-4"></a>    <span class="o">...</span>
 </span></code></pre></div>
 </div>
 <div class="admonition fail">
 <p class="admonition-title">不推荐</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-84-1"><a id="__codelineno-84-1" name="__codelineno-84-1" href="#__codelineno-84-1"></a><span class="k">def</span> <span class="nf">nullable_union</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span id="__span-84-2"><a id="__codelineno-84-2" name="__codelineno-84-2" href="#__codelineno-84-2"></a>    <span class="o">...</span>
-</span><span id="__span-84-3"><a id="__codelineno-84-3" name="__codelineno-84-3" href="#__codelineno-84-3"></a><span class="k">def</span> <span class="nf">implicit_optional</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span id="__span-84-4"><a id="__codelineno-84-4" name="__codelineno-84-4" href="#__codelineno-84-4"></a>    <span class="o">...</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-85-1"><a id="__codelineno-85-1" name="__codelineno-85-1" href="#__codelineno-85-1"></a><span class="k">def</span> <span class="nf">nullable_union</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="__span-85-2"><a id="__codelineno-85-2" name="__codelineno-85-2" href="#__codelineno-85-2"></a>    <span class="o">...</span>
+</span><span id="__span-85-3"><a id="__codelineno-85-3" name="__codelineno-85-3" href="#__codelineno-85-3"></a><span class="k">def</span> <span class="nf">implicit_optional</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="__span-85-4"><a id="__codelineno-85-4" name="__codelineno-85-4" href="#__codelineno-85-4"></a>    <span class="o">...</span>
 </span></code></pre></div>
 </div>
 <h3 id="3196">3.19.6 类型别名</h3>
 <p>可以为复杂类型声明别名。别名应该是大写的（<code>CapWorded</code>
 ）。如果别名仅在模块中使用，那么应该使用前置下划线让其变成私有的（如 <code>_Private</code>）。</p>
-<p>例如，如果模块名称和类型在一起太长了：</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-85-1"><a id="__codelineno-85-1" name="__codelineno-85-1" href="#__codelineno-85-1"></a><span class="n">_ShortName</span> <span class="o">=</span> <span class="n">module_with_long_name</span><span class="o">.</span><span class="n">TypeWithLongName</span>
-</span><span id="__span-85-2"><a id="__codelineno-85-2" name="__codelineno-85-2" href="#__codelineno-85-2"></a><span class="n">ComplexMap</span> <span class="o">=</span> <span class="n">Mapping</span><span class="p">[</span><span class="n">Text</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]]</span>
+<p>请注意，仅 3.10+ 版本支持 <code>:TypeAlias</code> 注释。</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-86-1"><a id="__codelineno-86-1" name="__codelineno-86-1" href="#__codelineno-86-1"></a><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TypeAlias</span>
+</span><span id="__span-86-2"><a id="__codelineno-86-2" name="__codelineno-86-2" href="#__codelineno-86-2"></a>
+</span><span id="__span-86-3"><a id="__codelineno-86-3" name="__codelineno-86-3" href="#__codelineno-86-3"></a><span class="n">_LossAndGradient</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span>
+</span><span id="__span-86-4"><a id="__codelineno-86-4" name="__codelineno-86-4" href="#__codelineno-86-4"></a><span class="n">ComplexTFMap</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">_LossAndGradient</span><span class="p">]</span>
 </span></code></pre></div>
 <p>其他例子还有复杂的嵌套类型和函数的多个返回变量（作为元组）。</p>
 <h3 id="3197">3.19.7 忽略类型</h3>
 <p>可以在行上使用特殊注释 <code># type: ignore</code> 禁用类型检查。</p>
 <p><code>pytype</code> 有一个针对特定错误的禁用选项（类似于 lint）</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-86-1"><a id="__codelineno-86-1" name="__codelineno-86-1" href="#__codelineno-86-1"></a><span class="c1"># pytype: disable=attribute-error</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-87-1"><a id="__codelineno-87-1" name="__codelineno-87-1" href="#__codelineno-87-1"></a><span class="c1"># pytype: disable=attribute-error</span>
 </span></code></pre></div>
 <h3 id="3198">3.19.8 标注变量</h3>
-<p>如果内部变量的类型很难推断或者无法推断时，可以通过以下几种方式指定其类型。</p>
-<p><em><a href="https://google.github.io/styleguide/pyguide.html#type-comments">类型注释</a></em></p>
-<p>在行末尾使用 <code># type:</code> 类型注释。</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-87-1"><a id="__codelineno-87-1" name="__codelineno-87-1" href="#__codelineno-87-1"></a><span class="n">a</span> <span class="o">=</span> <span class="n">SomeUndecoratedFunction</span><span class="p">()</span>  <span class="c1"># type: Foo</span>
-</span></code></pre></div>
 <p><em><a href="https://google.github.io/styleguide/pyguide.html#annotated-assignments">赋值标注</a></em></p>
-<p>在变量名和值之间使用冒号和类型，就像函数参数一样：</p>
+<p>如果一个内部变量的类型很难或无法推断出，则使用带注释的赋值指定它的类型 - 在变量名和值之间使用 <code>:</code> 和 <code>type</code>（与具有默认值的函数参数相同的做法）：</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-88-1"><a id="__codelineno-88-1" name="__codelineno-88-1" href="#__codelineno-88-1"></a><span class="n">a</span><span class="p">:</span> <span class="n">Foo</span> <span class="o">=</span> <span class="n">SomeUndecoratedFunction</span><span class="p">()</span>
+</span></code></pre></div>
+<p><em><a href="https://google.github.io/styleguide/pyguide.html#type-comments">类型注释</a></em></p>
+<p>虽然你可能会看到这些注释在代码库中仍然存在（它们在 Python 3.6 之前是必要的），但不要再在行末添加任何 <code># type: &lt;type name&gt;</code> 的注释了：</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-89-1"><a id="__codelineno-89-1" name="__codelineno-89-1" href="#__codelineno-89-1"></a><span class="n">a</span> <span class="o">=</span> <span class="n">SomeUndecoratedFunction</span><span class="p">()</span>  <span class="c1"># type: Foo</span>
 </span></code></pre></div>
 <h3 id="3199-vs">3.19.9 元组 vs 列表</h3>
 <p>类型化列表只能包含单一类型的对象。类型化元组可以具有单个重复类型，也可以具有一组不同类型的元素。后者通常用作函数的返回类型。</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-89-1"><a id="__codelineno-89-1" name="__codelineno-89-1" href="#__codelineno-89-1"></a><span class="n">a</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
-</span><span id="__span-89-2"><a id="__codelineno-89-2" name="__codelineno-89-2" href="#__codelineno-89-2"></a><span class="n">b</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-</span><span id="__span-89-3"><a id="__codelineno-89-3" name="__codelineno-89-3" href="#__codelineno-89-3"></a><span class="n">c</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-90-1"><a id="__codelineno-90-1" name="__codelineno-90-1" href="#__codelineno-90-1"></a><span class="n">a</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+</span><span id="__span-90-2"><a id="__codelineno-90-2" name="__codelineno-90-2" href="#__codelineno-90-2"></a><span class="n">b</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+</span><span id="__span-90-3"><a id="__codelineno-90-3" name="__codelineno-90-3" href="#__codelineno-90-3"></a><span class="n">c</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">)</span>
 </span></code></pre></div>
 <h3 id="31910-typevars">3.19.10 TypeVars</h3>
 <p>Python 类型系统中有<a href="https://www.python.org/dev/peps/pep-0484/#generics">泛型</a>，工厂函数 <code>TypeVar</code> 是使用它们的常用方法。</p>
 <p>例如：</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-90-1"><a id="__codelineno-90-1" name="__codelineno-90-1" href="#__codelineno-90-1"></a><span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Callable</span>
-</span><span id="__span-90-2"><a id="__codelineno-90-2" name="__codelineno-90-2" href="#__codelineno-90-2"></a><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">ParamSpec</span><span class="p">,</span> <span class="n">TypeVar</span>
-</span><span id="__span-90-3"><a id="__codelineno-90-3" name="__codelineno-90-3" href="#__codelineno-90-3"></a><span class="n">_P</span> <span class="o">=</span> <span class="n">ParamSpec</span><span class="p">(</span><span class="s2">&quot;_P&quot;</span><span class="p">)</span>
-</span><span id="__span-90-4"><a id="__codelineno-90-4" name="__codelineno-90-4" href="#__codelineno-90-4"></a><span class="n">_T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;_T&quot;</span><span class="p">)</span>
-</span><span id="__span-90-5"><a id="__codelineno-90-5" name="__codelineno-90-5" href="#__codelineno-90-5"></a><span class="o">...</span>
-</span><span id="__span-90-6"><a id="__codelineno-90-6" name="__codelineno-90-6" href="#__codelineno-90-6"></a><span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="n">l</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">_T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">_T</span><span class="p">:</span>
-</span><span id="__span-90-7"><a id="__codelineno-90-7" name="__codelineno-90-7" href="#__codelineno-90-7"></a>  <span class="k">return</span> <span class="n">l</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
-</span><span id="__span-90-8"><a id="__codelineno-90-8" name="__codelineno-90-8" href="#__codelineno-90-8"></a>
-</span><span id="__span-90-9"><a id="__codelineno-90-9" name="__codelineno-90-9" href="#__codelineno-90-9"></a><span class="k">def</span> <span class="nf">print_when_called</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">_P</span><span class="p">,</span> <span class="n">_T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="n">_P</span><span class="p">,</span> <span class="n">_T</span><span class="p">]:</span>
-</span><span id="__span-90-10"><a id="__codelineno-90-10" name="__codelineno-90-10" href="#__codelineno-90-10"></a>  <span class="k">def</span> <span class="nf">inner</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">P</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">P</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">R</span><span class="p">:</span>
-</span><span id="__span-90-11"><a id="__codelineno-90-11" name="__codelineno-90-11" href="#__codelineno-90-11"></a>    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Function was called&#39;</span><span class="p">)</span>
-</span><span id="__span-90-12"><a id="__codelineno-90-12" name="__codelineno-90-12" href="#__codelineno-90-12"></a>    <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-</span><span id="__span-90-13"><a id="__codelineno-90-13" name="__codelineno-90-13" href="#__codelineno-90-13"></a>  <span class="k">return</span> <span class="n">inner</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-91-1"><a id="__codelineno-91-1" name="__codelineno-91-1" href="#__codelineno-91-1"></a><span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Callable</span>
+</span><span id="__span-91-2"><a id="__codelineno-91-2" name="__codelineno-91-2" href="#__codelineno-91-2"></a><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">ParamSpec</span><span class="p">,</span> <span class="n">TypeVar</span>
+</span><span id="__span-91-3"><a id="__codelineno-91-3" name="__codelineno-91-3" href="#__codelineno-91-3"></a><span class="n">_P</span> <span class="o">=</span> <span class="n">ParamSpec</span><span class="p">(</span><span class="s2">&quot;_P&quot;</span><span class="p">)</span>
+</span><span id="__span-91-4"><a id="__codelineno-91-4" name="__codelineno-91-4" href="#__codelineno-91-4"></a><span class="n">_T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;_T&quot;</span><span class="p">)</span>
+</span><span id="__span-91-5"><a id="__codelineno-91-5" name="__codelineno-91-5" href="#__codelineno-91-5"></a><span class="o">...</span>
+</span><span id="__span-91-6"><a id="__codelineno-91-6" name="__codelineno-91-6" href="#__codelineno-91-6"></a><span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="n">l</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">_T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">_T</span><span class="p">:</span>
+</span><span id="__span-91-7"><a id="__codelineno-91-7" name="__codelineno-91-7" href="#__codelineno-91-7"></a>    <span class="k">return</span> <span class="n">l</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+</span><span id="__span-91-8"><a id="__codelineno-91-8" name="__codelineno-91-8" href="#__codelineno-91-8"></a>
+</span><span id="__span-91-9"><a id="__codelineno-91-9" name="__codelineno-91-9" href="#__codelineno-91-9"></a><span class="k">def</span> <span class="nf">print_when_called</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">_P</span><span class="p">,</span> <span class="n">_T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="n">_P</span><span class="p">,</span> <span class="n">_T</span><span class="p">]:</span>
+</span><span id="__span-91-10"><a id="__codelineno-91-10" name="__codelineno-91-10" href="#__codelineno-91-10"></a>    <span class="k">def</span> <span class="nf">inner</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">P</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">P</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">R</span><span class="p">:</span>
+</span><span id="__span-91-11"><a id="__codelineno-91-11" name="__codelineno-91-11" href="#__codelineno-91-11"></a>        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Function was called&#39;</span><span class="p">)</span>
+</span><span id="__span-91-12"><a id="__codelineno-91-12" name="__codelineno-91-12" href="#__codelineno-91-12"></a>        <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</span><span id="__span-91-13"><a id="__codelineno-91-13" name="__codelineno-91-13" href="#__codelineno-91-13"></a>    <span class="k">return</span> <span class="n">inner</span>
 </span></code></pre></div>
 <p>TypeVar 可以被约束：</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-91-1"><a id="__codelineno-91-1" name="__codelineno-91-1" href="#__codelineno-91-1"></a><span class="n">AddableType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;AddableType&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
-</span><span id="__span-91-2"><a id="__codelineno-91-2" name="__codelineno-91-2" href="#__codelineno-91-2"></a><span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">AddableType</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">AddableType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AddableType</span><span class="p">:</span>
-</span><span id="__span-91-3"><a id="__codelineno-91-3" name="__codelineno-91-3" href="#__codelineno-91-3"></a>  <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-92-1"><a id="__codelineno-92-1" name="__codelineno-92-1" href="#__codelineno-92-1"></a><span class="n">AddableType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;AddableType&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+</span><span id="__span-92-2"><a id="__codelineno-92-2" name="__codelineno-92-2" href="#__codelineno-92-2"></a><span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">AddableType</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">AddableType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AddableType</span><span class="p">:</span>
+</span><span id="__span-92-3"><a id="__codelineno-92-3" name="__codelineno-92-3" href="#__codelineno-92-3"></a>    <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
 </span></code></pre></div>
 <p><code>typing</code> 模块中一个常见的预定义类型变量是 <code>AnyStr</code> 。可以用于标注 <code>bytes</code> 或 <code>unicode</code> ，但是必须是在相同类型中使用。</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-92-1"><a id="__codelineno-92-1" name="__codelineno-92-1" href="#__codelineno-92-1"></a><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">AnyStr</span>
-</span><span id="__span-92-2"><a id="__codelineno-92-2" name="__codelineno-92-2" href="#__codelineno-92-2"></a><span class="k">def</span> <span class="nf">check_length</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">AnyStr</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AnyStr</span><span class="p">:</span>
-</span><span id="__span-92-3"><a id="__codelineno-92-3" name="__codelineno-92-3" href="#__codelineno-92-3"></a>  <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">42</span><span class="p">:</span>
-</span><span id="__span-92-4"><a id="__codelineno-92-4" name="__codelineno-92-4" href="#__codelineno-92-4"></a>    <span class="k">return</span> <span class="n">x</span>
-</span><span id="__span-92-5"><a id="__codelineno-92-5" name="__codelineno-92-5" href="#__codelineno-92-5"></a>  <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-93-1"><a id="__codelineno-93-1" name="__codelineno-93-1" href="#__codelineno-93-1"></a><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">AnyStr</span>
+</span><span id="__span-93-2"><a id="__codelineno-93-2" name="__codelineno-93-2" href="#__codelineno-93-2"></a><span class="k">def</span> <span class="nf">check_length</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">AnyStr</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AnyStr</span><span class="p">:</span>
+</span><span id="__span-93-3"><a id="__codelineno-93-3" name="__codelineno-93-3" href="#__codelineno-93-3"></a>    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">42</span><span class="p">:</span>
+</span><span id="__span-93-4"><a id="__codelineno-93-4" name="__codelineno-93-4" href="#__codelineno-93-4"></a>        <span class="k">return</span> <span class="n">x</span>
+</span><span id="__span-93-5"><a id="__codelineno-93-5" name="__codelineno-93-5" href="#__codelineno-93-5"></a>    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
 </span></code></pre></div>
 <p>类型变量必须具有描述性名称，除非它满足以下所有条件：</p>
 <ul>
@@ -3157,54 +3184,46 @@ API，最好使用符合 PEP8 的描述性名称（<code>descriptive_names</code
 </ul>
 <div class="admonition success">
 <p class="admonition-title">推荐</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-93-1"><a id="__codelineno-93-1" name="__codelineno-93-1" href="#__codelineno-93-1"></a><span class="n">_T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;_T&quot;</span><span class="p">)</span>
-</span><span id="__span-93-2"><a id="__codelineno-93-2" name="__codelineno-93-2" href="#__codelineno-93-2"></a><span class="n">_P</span> <span class="o">=</span> <span class="n">ParamSpec</span><span class="p">(</span><span class="s2">&quot;_P&quot;</span><span class="p">)</span>
-</span><span id="__span-93-3"><a id="__codelineno-93-3" name="__codelineno-93-3" href="#__codelineno-93-3"></a><span class="n">AddableType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;AddableType&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
-</span><span id="__span-93-4"><a id="__codelineno-93-4" name="__codelineno-93-4" href="#__codelineno-93-4"></a><span class="n">AnyFunction</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;AnyFunction&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Callable</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-94-1"><a id="__codelineno-94-1" name="__codelineno-94-1" href="#__codelineno-94-1"></a><span class="n">_T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;_T&quot;</span><span class="p">)</span>
+</span><span id="__span-94-2"><a id="__codelineno-94-2" name="__codelineno-94-2" href="#__codelineno-94-2"></a><span class="n">_P</span> <span class="o">=</span> <span class="n">ParamSpec</span><span class="p">(</span><span class="s2">&quot;_P&quot;</span><span class="p">)</span>
+</span><span id="__span-94-3"><a id="__codelineno-94-3" name="__codelineno-94-3" href="#__codelineno-94-3"></a><span class="n">AddableType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;AddableType&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+</span><span id="__span-94-4"><a id="__codelineno-94-4" name="__codelineno-94-4" href="#__codelineno-94-4"></a><span class="n">AnyFunction</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;AnyFunction&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Callable</span><span class="p">)</span>
 </span></code></pre></div>
 </div>
 <div class="admonition fail">
 <p class="admonition-title">不推荐</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-94-1"><a id="__codelineno-94-1" name="__codelineno-94-1" href="#__codelineno-94-1"></a><span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
-</span><span id="__span-94-2"><a id="__codelineno-94-2" name="__codelineno-94-2" href="#__codelineno-94-2"></a><span class="n">P</span> <span class="o">=</span> <span class="n">ParamSpec</span><span class="p">(</span><span class="s2">&quot;P&quot;</span><span class="p">)</span>
-</span><span id="__span-94-3"><a id="__codelineno-94-3" name="__codelineno-94-3" href="#__codelineno-94-3"></a><span class="n">_T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;_T&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
-</span><span id="__span-94-4"><a id="__codelineno-94-4" name="__codelineno-94-4" href="#__codelineno-94-4"></a><span class="n">_F</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;_F&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Callable</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-95-1"><a id="__codelineno-95-1" name="__codelineno-95-1" href="#__codelineno-95-1"></a><span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
+</span><span id="__span-95-2"><a id="__codelineno-95-2" name="__codelineno-95-2" href="#__codelineno-95-2"></a><span class="n">P</span> <span class="o">=</span> <span class="n">ParamSpec</span><span class="p">(</span><span class="s2">&quot;P&quot;</span><span class="p">)</span>
+</span><span id="__span-95-3"><a id="__codelineno-95-3" name="__codelineno-95-3" href="#__codelineno-95-3"></a><span class="n">_T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;_T&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+</span><span id="__span-95-4"><a id="__codelineno-95-4" name="__codelineno-95-4" href="#__codelineno-95-4"></a><span class="n">_F</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;_F&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Callable</span><span class="p">)</span>
 </span></code></pre></div>
 </div>
 <h3 id="31911">3.19.11 字符串类型</h3>
-<p>不要在新代码中使用<code>typing.Text</code>。它仅用于 Python 2/3 兼容性。
-使用 <code>str</code> 作为字符串/文本数据。对于处理二进制数据的代码，请使用<code>bytes</code>。</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-95-1"><a id="__codelineno-95-1" name="__codelineno-95-1" href="#__codelineno-95-1"></a><span class="k">def</span> <span class="nf">deals_with_text_data</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span id="__span-95-2"><a id="__codelineno-95-2" name="__codelineno-95-2" href="#__codelineno-95-2"></a>  <span class="o">...</span>
-</span><span id="__span-95-3"><a id="__codelineno-95-3" name="__codelineno-95-3" href="#__codelineno-95-3"></a><span class="k">def</span> <span class="nf">deals_with_binary_data</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
-</span><span id="__span-95-4"><a id="__codelineno-95-4" name="__codelineno-95-4" href="#__codelineno-95-4"></a>  <span class="o">...</span>
+<blockquote>
+<p>不要在新代码中使用 <code>typing.Text</code> 。它仅用于 Python 2/3 兼容性。</p>
+</blockquote>
+<p>使用 <code>str</code> 作为<code>string</code> / <code>text</code> 数据。对于处理二进制数据的代码，请使用 <code>bytes</code> 。</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-96-1"><a id="__codelineno-96-1" name="__codelineno-96-1" href="#__codelineno-96-1"></a><span class="k">def</span> <span class="nf">deals_with_text_data</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="__span-96-2"><a id="__codelineno-96-2" name="__codelineno-96-2" href="#__codelineno-96-2"></a>  <span class="o">...</span>
+</span><span id="__span-96-3"><a id="__codelineno-96-3" name="__codelineno-96-3" href="#__codelineno-96-3"></a><span class="k">def</span> <span class="nf">deals_with_binary_data</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+</span><span id="__span-96-4"><a id="__codelineno-96-4" name="__codelineno-96-4" href="#__codelineno-96-4"></a>  <span class="o">...</span>
 </span></code></pre></div>
 <p>如果函数的所有字符串类型始终相同，例如，如果返回类型与上面代码中的参数类型相同，请使用
-<a href="https://google.github.io/styleguide/pyguide.html#typing-type-var">AnyStr</a>。
-想要正确的标注字符串类型，取决于代码将使用哪个版本的 Python 。</p>
+<a href="https://google.github.io/styleguide/pyguide.html#typing-type-var">AnyStr</a>。</p>
 <h3 id="31912">3.19.12 类型导入</h3>
 <p>对于用于支持静态分析和类型检查的 <code>types</code> 和 <code>collections.abc</code> 模块中的符号，请始终导入符号本身。
 这使得常见注释更加简洁，并符合世界各地使用的打字习惯。明确允许从 <code>typing</code> 和 <code>collections.abc</code> 模块在一行中导入多个特定类。</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-96-1"><a id="__codelineno-96-1" name="__codelineno-96-1" href="#__codelineno-96-1"></a><span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Sequence</span>
-</span><span id="__span-96-2"><a id="__codelineno-96-2" name="__codelineno-96-2" href="#__codelineno-96-2"></a><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Generic</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-97-1"><a id="__codelineno-97-1" name="__codelineno-97-1" href="#__codelineno-97-1"></a><span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Sequence</span>
+</span><span id="__span-97-2"><a id="__codelineno-97-2" name="__codelineno-97-2" href="#__codelineno-97-2"></a><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Generic</span>
 </span></code></pre></div>
-<p>既然这种从 <code>typing</code> 模块导入的方式会将导入项添加到本地命名空间， 那么 <code>typing</code> 中的任何名称都应该类似于关键字，而且不要在你的
+<p>既然这种从 <code>typing</code> 模块导入的方式会将导入项添加到本地命名空间， 那么 <code>typing</code> 或 <code>collections.abc</code> 中的任何名称都应该类似于关键字，而且不要在你的
 Python 代码中去定义（无论是否有类型）。如果模块中的类型和现有名称之间存在冲突，请使用 <code>import x as y</code> 导入。</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-97-1"><a id="__codelineno-97-1" name="__codelineno-97-1" href="#__codelineno-97-1"></a><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span> <span class="k">as</span> <span class="n">AnyType</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-98-1"><a id="__codelineno-98-1" name="__codelineno-98-1" href="#__codelineno-98-1"></a><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span> <span class="k">as</span> <span class="n">AnyType</span>
 </span></code></pre></div>
 <p>推荐使用内置类型作为注释（如果可用）。 Python 通过 Python 3.9 中引入的 <a href="https://peps.python.org/pep-0585/">PEP-585</a>
 支持使用参数容器类型的类型注释。</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-98-1"><a id="__codelineno-98-1" name="__codelineno-98-1" href="#__codelineno-98-1"></a><span class="k">def</span> <span class="nf">generate_foo_scores</span><span class="p">(</span><span class="n">foo</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
-</span><span id="__span-98-2"><a id="__codelineno-98-2" name="__codelineno-98-2" href="#__codelineno-98-2"></a>  <span class="o">...</span>
-</span></code></pre></div>
-<p>注意：<a href="https://github.com/apache/beam/issues/23366">Apache Beam</a> 的用户应继续通过输入导入参数容器。</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-99-1"><a id="__codelineno-99-1" name="__codelineno-99-1" href="#__codelineno-99-1"></a><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Set</span><span class="p">,</span> <span class="n">List</span>
-</span><span id="__span-99-2"><a id="__codelineno-99-2" name="__codelineno-99-2" href="#__codelineno-99-2"></a>
-</span><span id="__span-99-3"><a id="__codelineno-99-3" name="__codelineno-99-3" href="#__codelineno-99-3"></a><span class="c1"># Only use this older style if you are required to by introspection</span>
-</span><span id="__span-99-4"><a id="__codelineno-99-4" name="__codelineno-99-4" href="#__codelineno-99-4"></a><span class="c1"># code such as Apache Beam that has not yet been updated for PEP-585,</span>
-</span><span id="__span-99-5"><a id="__codelineno-99-5" name="__codelineno-99-5" href="#__codelineno-99-5"></a><span class="c1"># or if your code needs to run on Python versions earlier than 3.9.</span>
-</span><span id="__span-99-6"><a id="__codelineno-99-6" name="__codelineno-99-6" href="#__codelineno-99-6"></a><span class="k">def</span> <span class="nf">generate_foo_scores</span><span class="p">(</span><span class="n">foo</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
-</span><span id="__span-99-7"><a id="__codelineno-99-7" name="__codelineno-99-7" href="#__codelineno-99-7"></a>  <span class="o">...</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-99-1"><a id="__codelineno-99-1" name="__codelineno-99-1" href="#__codelineno-99-1"></a><span class="k">def</span> <span class="nf">generate_foo_scores</span><span class="p">(</span><span class="n">foo</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+</span><span id="__span-99-2"><a id="__codelineno-99-2" name="__codelineno-99-2" href="#__codelineno-99-2"></a>    <span class="o">...</span>
 </span></code></pre></div>
 <h3 id="31913">3.19.13 条件导入</h3>
 <p>仅在特殊情况下才使用条件导入，在这种情况下，必须在运行时避免类型检查所需的其他导入。不推荐这种方式；应该首选其他方法，比如重构代码以允许顶级导入。</p>
@@ -3235,24 +3254,33 @@ Any）。别名定义应该与最后导入分开一行。</p>
 </span></code></pre></div>
 <h3 id="31915">3.19.15 泛型</h3>
 <p>进行标注时，最好为泛型类型指定类型参数；否则，<a href="https://www.python.org/dev/peps/pep-0484/#the-any-type">泛型参数将被假定为 <code>Any</code></a>。</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-102-1"><a id="__codelineno-102-1" name="__codelineno-102-1" href="#__codelineno-102-1"></a><span class="k">def</span> <span class="nf">get_names</span><span class="p">(</span><span class="n">employee_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<div class="admonition success">
+<p class="admonition-title">推荐</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-102-1"><a id="__codelineno-102-1" name="__codelineno-102-1" href="#__codelineno-102-1"></a><span class="k">def</span> <span class="nf">get_names</span><span class="p">(</span><span class="n">employee_ids</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
 </span><span id="__span-102-2"><a id="__codelineno-102-2" name="__codelineno-102-2" href="#__codelineno-102-2"></a>    <span class="o">...</span>
 </span></code></pre></div>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-103-1"><a id="__codelineno-103-1" name="__codelineno-103-1" href="#__codelineno-103-1"></a><span class="c1"># These are both interpreted as get_names(employee_ids: List[Any]) -&gt; Dict[Any, Any]</span>
-</span><span id="__span-103-2"><a id="__codelineno-103-2" name="__codelineno-103-2" href="#__codelineno-103-2"></a><span class="k">def</span> <span class="nf">get_names</span><span class="p">(</span><span class="n">employee_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+</div>
+<div class="admonition fail">
+<p class="admonition-title">不推荐</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-103-1"><a id="__codelineno-103-1" name="__codelineno-103-1" href="#__codelineno-103-1"></a><span class="c1"># This is interpreted as get_names(employee_ids: Sequence[Any]) -&gt; Mapping[Any, Any]</span>
+</span><span id="__span-103-2"><a id="__codelineno-103-2" name="__codelineno-103-2" href="#__codelineno-103-2"></a><span class="k">def</span> <span class="nf">get_names</span><span class="p">(</span><span class="n">employee_ids</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Mapping</span><span class="p">:</span>
 </span><span id="__span-103-3"><a id="__codelineno-103-3" name="__codelineno-103-3" href="#__codelineno-103-3"></a>    <span class="o">...</span>
-</span><span id="__span-103-4"><a id="__codelineno-103-4" name="__codelineno-103-4" href="#__codelineno-103-4"></a>
-</span><span id="__span-103-5"><a id="__codelineno-103-5" name="__codelineno-103-5" href="#__codelineno-103-5"></a><span class="k">def</span> <span class="nf">get_names</span><span class="p">(</span><span class="n">employee_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-</span><span id="__span-103-6"><a id="__codelineno-103-6" name="__codelineno-103-6" href="#__codelineno-103-6"></a>    <span class="o">...</span>
 </span></code></pre></div>
+</div>
 <p>如果泛型的最佳类型参数是 <code>Any</code>，请使用显式设置。但请记住，在许多情况下 <a href="#31910-typevars"><code>TypeVar</code></a> 可能更合适。</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-104-1"><a id="__codelineno-104-1" name="__codelineno-104-1" href="#__codelineno-104-1"></a><span class="k">def</span> <span class="nf">get_names</span><span class="p">(</span><span class="n">employee_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Text</span><span class="p">]:</span>
+<div class="admonition fail">
+<p class="admonition-title">不推荐</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-104-1"><a id="__codelineno-104-1" name="__codelineno-104-1" href="#__codelineno-104-1"></a><span class="k">def</span> <span class="nf">get_names</span><span class="p">(</span><span class="n">employee_ids</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Mapping</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
 </span><span id="__span-104-2"><a id="__codelineno-104-2" name="__codelineno-104-2" href="#__codelineno-104-2"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a mapping from employee ID to employee name for given IDs.&quot;&quot;&quot;</span>
 </span></code></pre></div>
+</div>
+<div class="admonition success">
+<p class="admonition-title">推荐</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-105-1"><a id="__codelineno-105-1" name="__codelineno-105-1" href="#__codelineno-105-1"></a><span class="n">_T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">&#39;_T&#39;</span><span class="p">)</span>
-</span><span id="__span-105-2"><a id="__codelineno-105-2" name="__codelineno-105-2" href="#__codelineno-105-2"></a><span class="k">def</span> <span class="nf">get_names</span><span class="p">(</span><span class="n">employee_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">_T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">_T</span><span class="p">,</span> <span class="n">Text</span><span class="p">]:</span>
+</span><span id="__span-105-2"><a id="__codelineno-105-2" name="__codelineno-105-2" href="#__codelineno-105-2"></a><span class="k">def</span> <span class="nf">get_names</span><span class="p">(</span><span class="n">employee_ids</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">_T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Mapping</span><span class="p">[</span><span class="n">_T</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
 </span><span id="__span-105-3"><a id="__codelineno-105-3" name="__codelineno-105-3" href="#__codelineno-105-3"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a mapping from employee ID to employee name for given IDs.&quot;&quot;&quot;</span>
 </span></code></pre></div>
+</div>
 
 
 
